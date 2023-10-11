@@ -35,6 +35,7 @@
 
 
   <div class="container">
+    <img style="height: 350px; width: 100%;" src="/static/images/grocery3.jpg" alt="">
 
     <br>
     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
@@ -81,9 +82,8 @@
     <table id="myTable" class="table">
       <thead>
         <tr>
-          <th scope="col">id</th>
-          <th scope="col">pid</th>
-          <th scope="col">User id</th>
+          <th scope="col">s_id</th>
+          <th scope="col">product_id</th>
           <th scope="col">quantity</th>
           <th scope="col">created_at</th>
         </tr>
@@ -95,8 +95,6 @@
           <td>{{ sp1[1] }}</td>
           <td>{{ sp1[2] }}</td>
           <td>{{ sp1[3] }}</td>
-          <td>{{ sp1[4] }}</td>
-
         </tr>
         {%endfor %}
       </tbody>

@@ -1,7 +1,7 @@
 
 from flask import Flask, render_template, request, redirect,url_for,session,flash
 
-from dbservice import insert_data,insert_data1,get_data,get_data1,profit,check_email,email_pass,create_user
+from dbservice import insert_products,insert_sales,get_data,get_data,profit,check_email,email_pass,create_user
 from datetime import datetime
 
 
@@ -71,14 +71,14 @@ def dashboard():
 @app.route("/add_products", methods=['POST'])
 def add_products():
     
-    prod_n=request.form['product_name']
-    buy_p=request.form['buying_price']
-    sell_p=request.form['selling_price']
-    stock_q=request.form['stock_quantity'] 
+    name=request.form['product_name']
+    buy=request.form['buying_price']
+    sel=request.form['selling_price']
+    stock_quantity=request.form['stock_quantity'] 
 
-    values=(prod_n,buy_p,sell_p,stock_q)
+    values=(name,buy,sel,stock_quantity)
         
-    insert_data(values)
+    insert_products(values)
        
     return redirect("/products")
 
@@ -86,8 +86,8 @@ def add_products():
 @app.route("/products",methods=['GET', 'POST'])
 def products():
     if confirm_auth():
-        sp=get_data("products")
-        return render_template("products.html", myprods = sp)
+        prds=get_data("products")
+        return render_template("products.html", myprods = prds)
     else:
         flash("Log in to access")
         return redirect(url_for("login"))
@@ -101,7 +101,7 @@ def add_sales():
 
     values1=(product_id,quantity,created_at)
             
-    insert_data1(values1)
+    insert_sales(values1)
     return redirect("/sales")
 
 #route for accessing sales
@@ -109,7 +109,7 @@ def add_sales():
 def sales():
     if confirm_auth():
         ss=get_data("products")
-        sp1=get_data1("sales")
+        sp1=get_data("sales")
         return render_template("sales.html", myprods1 = sp1,prd=ss)
     else:
         flash("Log in to access")

@@ -1,128 +1,132 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Sales System</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
-    integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+  <title>Sales system</title>
 
+  <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+  <script src="//cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
-  <link rel="stylesheet" href="/static/css/jquery.css">
+  <link href="//cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+
+  <link rel="stylesheet" href="/static/style.css">
 </head>
 
 <body>
   <nav class="navbar navbar-expand-lg bg-body-tertiary">
     <div class="container-fluid">
-      <a class="navbar-brand" href="/">Sales System</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <a class="navbar-brand" href="/">Home</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup"
+        aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav">
-          <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="/dashboard">Dashboard</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/products">Products</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/sales">Sales</a>
-          </li>
-        </ul>
+      <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+        <div class="navbar-nav">
+
+          <a class="nav-link" href="/dashboard">Dashboard</a>
+          <a class="nav-link" href="/products">Products</a>
+
+          
+          <a class="nav-link" href="/sales">Sales</a>
+          <a class="nav-link" style="float: right;" href="/logout"> logout</a>
+        </div>
       </div>
     </div>
   </nav>
- 
+
   <div class="container">
-    <h1>Our Products</h1>
-    <img style="width: 100%; height: 10cm;" src="/static/images/grocery4.jpg" alt=""><br><br>
-    <!-- Button trigger modal -->
-    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
-      Add new
+
+    <div id="carouselExampleSlidesOnly" class="carousel slide" data-bs-ride="carousel">
+      <div class="carousel-inner">
+        <div class="carousel-item active" data-bs-interval="200">
+          <img style="height: 400px;" src="/static/images/grocery1.jpg" class="d-block w-100" alt="...">
+        </div>
+        <div class="carousel-item">
+          <img style="height: 400px;" src="/static/images/grocery2.webp" class="d-block w-100" alt="...">
+        </div>
+        <div class="carousel-item">
+          <img style="height: 400px;" src="/static/images/grocery4.jpg" class="d-block w-100" alt="...">
+        </div>
+      </div>
+    </div>
+
+    <br>
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+      Add product
     </button>
-    <!-- Bootstrap Modal for Adding Products -->
-    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <br>
+    <br>
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
-            <h1 class="modal-title fs-5" id="staticBackdropLabel">Modal title</h1>
+            <h1 class="modal-title fs-5" id="exampleModalLabel">insert Product</h1>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-            <form action="/add-products" method="post">
-              <div class="mb-3">
-                <label for="productname" class="form-label">Product Name</label>
-                <input type="text" class="form-control" id="productname" name="productname">
-              </div>
-              <div class="mb-3">
-                <label for="buying_price" class="form-label">Buying Price</label>
-                <input type="text" class="form-control" id="buying_price" name="buying_price">
-              </div>
-              <div class="mb-3">
-                <label for="selling_price" class="form-label">Selling Price</label>
-                <input type="text" class="form-control" id="selling_price" name="selling_price">
-              </div>
-              <div class="mb-3">
-                <label for="stock_quantity" class="form-label">Stock Quantity</label>
-                <input type="text" class="form-control" id="stock_quantity" name="stock_quantity">
-              </div>
-              <button type="submit" class="btn btn-primary">Submit</button>
+
+            <form id="pform" action="/add_products" method="POST">
+              <label>Product name</label>
+              <input type="text" name="product_name" placeholder="Product name" id="pname">
+              <br>
+              <br>
+              <label>Buying price</label>
+              <input type="text" name="buying_price" placeholder="Buying price" id="bp">
+              <br>
+              <br>
+              <label>Selling price</label>
+              <input type="text" name="selling_price" placeholder="Selling price" id="sp">
+              <br>
+              <br>
+              <label>Stock quantity</label>
+              <input type="text" name="stock_quantity" placeholder="Stock quantity" id="sq">
+              <br>
+
+              <br>
+              <input type="submit" value="POST">
+
             </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary">Save changes</button>
           </div>
         </div>
       </div>
-  
     </div>
-    <!-- Display Products in a Table -->
-    <table class="table" id="myTable">
+    <table id="myTable" class="table">
       <thead>
         <tr>
-          <th scope="col">Product ID</th>
-          <th scope="col">Product Name</th>
-          <th scope="col">Buying Price</th>
-          <th scope="col">Selling Price</th>
-          <th scope="col">Stock Quantity</th>
+          <th scope="col">id</th>
+          <th scope="col">Product name</th>
+          <th scope="col">Buying price</th>
+          <th scope="col">Selling price</th>
+          <th scope="col">Stock quantity</th>
         </tr>
       </thead>
       <tbody>
-        {% for myproduct in myproducts %}
+        {%for sp in myprods%}
         <tr>
-          <td>{{ myproduct[0] }}</td>
-          <td>{{ myproduct[1] }}</td>
-          <td>{{ myproduct[2] }}</td>
-          <td>{{ myproduct[3] }}</td>
-          <td>{{ myproduct[4] }}</td>
+          <th>{{ sp[0]}}</th>
+          <td>{{ sp[1] }}</td>
+          <td>{{ sp[2] }}</td>
+          <td>{{ sp[3] }}</td>
+          <td>{{ sp[4] }}</td>
         </tr>
-        {% endfor %}
+        {%endfor %}
       </tbody>
     </table>
   </div>
   <script>
-    const myModal = document.getElementById('myModal')
-    const myInput = document.getElementById('myInput')
-
-    myModal.addEventListener('shown.bs.modal', () => {
-      myInput.focus()
-    })
-  </script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"
-    integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g=="
-    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
-    integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
-    crossorigin="anonymous"></script>
-  <script src="/static/javascript/jquery.js"></script>
-
-  <script>
-    // datatable
     let table = new DataTable('#myTable');
   </script>
-
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous">
   </script>
+
 </body>
 
 </html>

@@ -1,99 +1,127 @@
 
-from flask import Flask, render_template, request, redirect,session
-from dbservice import get_data,insert_products,insert_sale,calc_profit
-from dbservice import check_email,check_pass_match,create_user
-from flask import flash,url_for
+from flask import Flask, render_template, request, redirect,url_for,session,flash
+
+from dbservice import insert_data,insert_data1,get_data,get_data1,profit,check_email,email_pass,create_user
+from datetime import datetime
+
+
 
 app = Flask(__name__)
-app.secret_key = '1998'
+app.secret_key="1990" 
 
-#def login_check():
-    #if session['email'] != None:
-      # return redirect(url_for("dashboard"))
-   # return redirect(url_for("login"))
-# Route for the homepage
+def confirm_auth():
+    return 'id' in session
+ 
+
 @app.route("/")
-def sales_system():
-    return render_template("index.html")
-
-# Route for the dashboard
-@app.route("/dashboard")
-def dashboard():
-    dates = []
-    profits = []
-    for i in calc_profit():
-         dates.append(str(i[0]))
-         profits.append(float(i[1]))
-    return render_template("dashboard.html",dates=dates,profits=profits)
-
-# Route for displaying and handling product data
-@app.route("/add-products", methods=["POST"])
-def add_products():
-        productname = request.form['productname']
-        buying_price = request.form['buying_price']
-        selling_price = request.form['selling_price']
-        stock_quantity = request.form['stock_quantity']
-        columns=(productname, buying_price, selling_price, stock_quantity)
-        insert_products(columns)
-        return redirect('/products')
-@app.route("/products")
-def products():
-    
-    products_data = get_data("products")
-    return render_template("products.html", myproducts=products_data)
+def index():
+  return render_template("index.html") 
 
 #route for login
-@app.route("/login", methods=["GET","POST"])
+@app.route("/login", methods=['GET', 'POST'])
 def login():
-    error = None
-    if request.method == "POST":
+    if request.method == 'POST':  
         email = request.form['email']
-        password  = request.form['password']
-        submit = (email,password)
-        check_pass_match(email,password)
-        if submit:
-         flash ("correct")
-         return redirect(url_for("dashboard"))
+        password = request.form['password']
+        log_in = email_pass(email, password)
+        if log_in:
+            session["id"] = log_in[0] 
+            return redirect(url_for("dashboard"))          
         else:
-         error = "incorrect password or email"
-    return render_template("login.html", error=error)
- #route for register
+            flash("Invalid Email or Password")
+    return render_template("login.html")
+
+
+#route for register   
 @app.route("/register", methods=["GET","POST"])
-def register():
+def register1():
     if request.method == "POST":
-     full_name = request.form["full_name"]
-     email = request.form["email"]
-     password = request.form["password"]
-     values = (full_name,email,password)
-     e_exist = check_email(email)
-     if  e_exist:
-        flash ("Email already exists.")
+        full_name = request.form.get('full_name')
+
+        email = request.form.get('email')
+
+        password = request.form.get('password')
+
+        values=(full_name, email, password) 
+
+        exists =check_email(email)
+        
+        if exists :
+            flash("Email already exist")
            
-     else:
-        create_user(values) 
-        flash("registerd succesfully")
-        return redirect('/dashboard')
+        else:
+            flash("Registered succesfully!")
+            create_user(values)
+            return redirect("/login")
+        
+    return render_template("login.html")
 
+#route for dashboard
+@app.route("/dashboard")
+def dashboard():  
+    if confirm_auth(): 
+        p1=[float(i[0]) for i in profit()]
+        p2=[str(i[1]) for i in profit()]
+        return render_template("dashboard.html", myprof = p1, myprof2=p2)
+    else:
+        flash("Log in to access")
+        return redirect(url_for("login"))
+
+#route for adding products
+@app.route("/add_products", methods=['POST'])
+def add_products():
     
-    return render_template("register.html")
-# Route for displaying sales 
-@app.route("/sales", methods=["GET", "POST"])
-def sales():
-   
-    sales_data = get_data('sales')
-    products=get_data("products")
-    return render_template("sales.html", mysales=sales_data,products=products)
+    prod_n=request.form['product_name']
+    buy_p=request.form['buying_price']
+    sell_p=request.form['selling_price']
+    stock_q=request.form['stock_quantity'] 
 
-@app.route("/add-sales" ,methods=["POST"])
+    values=(prod_n,buy_p,sell_p,stock_q)
+        
+    insert_data(values)
+       
+    return redirect("/products")
+
+#route for accessing products
+@app.route("/products",methods=['GET', 'POST'])
+def products():
+    if confirm_auth():
+        sp=get_data("products")
+        return render_template("products.html", myprods = sp)
+    else:
+        flash("Log in to access")
+        return redirect(url_for("login"))
+
+#route for adding sales
+@app.route("/add_sales" , methods=['POST'])
 def add_sales():
-    product_id=request.form["product_id"]
-    quantity = request.form['quantity']  
-    msale=(product_id,quantity)
-    insert_sale(msale)
+    product_id= request.form['pid']
+    quantity= request.form['quantity']
+    created_at= datetime.now().replace(microsecond=0)
 
-    return redirect('/sales')
+    values1=(product_id,quantity,created_at)
+            
+    insert_data1(values1)
+    return redirect("/sales")
+
+#route for accessing sales
+@app.route("/sales", methods=['GET', 'POST'])
+def sales():
+    if confirm_auth():
+        ss=get_data("products")
+        sp1=get_data1("sales")
+        return render_template("sales.html", myprods1 = sp1,prd=ss)
+    else:
+        flash("Log in to access")
+        return redirect(url_for("login"))
+
+
+#route for logging out
+@app.route("/logout",methods=['GET','POST'])
+def logout():
+    session.pop("id", None)
+    return redirect('/login')
 
 
 
-if __name__ == "__main__":
-    app.run(debug=True)
+app.run(debug=True)
